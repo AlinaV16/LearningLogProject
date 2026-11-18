@@ -1,3 +1,4 @@
+
 from django.shortcuts import render, redirect
 from .models import *
 from .forms import *
@@ -6,15 +7,15 @@ from django.http import Http404
 
 # Create your views here.
 def index(request):
-    return render(request, 'MainApp/index.html')
+    return render(request, 'mainapp/index.html')
 
 @login_required
 def topics(request):
     topics = Topic.objects.filter(owner=request.user).order_by('date_added')
-    
-    context = {'all_topics':topics}
 
-    return render(request, 'MainApp/topics.html', context)
+    context = {'all_topics': topics}
+
+    return render(request, 'mainapp/topics.html', context)
 
 @login_required
 def topic(request, topic_id):
@@ -23,16 +24,16 @@ def topic(request, topic_id):
     if t.owner != request.user:
         raise Http404
 
-    entries = Entry.objects.filter(topic= t).order_by('-date_added')
+    entries = Entry.objects.filter(topic=t).order_by('-date_added')
 
-    context = {'topic':t, 'entries':entries}
+    context = {'topic': t, 'entries': entries}
 
-    return render(request, 'MainApp/topic.html',context)
+    return render(request, 'mainapp/topic.html', context)
 
 @login_required
 def new_topic(request):
     if request.method != 'POST':
-        form =TopicForm()
+        form = TopicForm()
     else:
         form = TopicForm(data=request.POST)
 
@@ -43,16 +44,16 @@ def new_topic(request):
 
             return redirect('MainApp:topics')
 
-    context = {'form':form}
+    context = {'form': form}
 
-    return render(request, 'MainApp/new_topic.html', context)   
+    return render(request, 'mainapp/new_topic.html', context)
 
 @login_required
 def new_entry(request, topic_id):
     topic = Topic.objects.get(id=topic_id)
 
     if topic.owner != request.user:
-            raise Http404
+        raise Http404
 
     if request.method != 'POST':
         form = EntryForm()
@@ -67,7 +68,7 @@ def new_entry(request, topic_id):
             return redirect('MainApp:topic', topic_id=topic_id)
 
     context = {'topic': topic, 'form': form}
-    return render(request, 'MainApp/new_entry.html', context)
+    return render(request, 'mainapp/new_entry.html', context)
 
 @login_required
 def edit_entry(request, entry_id):
@@ -85,5 +86,5 @@ def edit_entry(request, entry_id):
             form.save()
             return redirect('MainApp:topic', topic_id=topic.id)
 
-    context = {'form':form, 'topic':topic, 'entry':entry}
-    return render(request, 'MainApp/edit_entry.html', context)
+    context = {'form': form, 'topic': topic, 'entry': entry}
+    return render(request, 'mainapp/edit_entry.html', context)
